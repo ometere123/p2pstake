@@ -1,5 +1,5 @@
 import { getClient } from "./client";
-import { TransactionStatus } from "genlayer-js/types";
+import { TransactionStatus, type TransactionHash } from "genlayer-js/types";
 
 export interface TxReceiptOptions {
   hash: string;
@@ -11,7 +11,7 @@ export interface TxReceiptOptions {
 export async function waitForReceipt(opts: TxReceiptOptions) {
   const client = getClient();
   const receipt = await client.waitForTransactionReceipt({
-    hash: opts.hash as any,
+    hash: opts.hash as TransactionHash,
     status: opts.status ?? TransactionStatus.ACCEPTED,
     retries: opts.retries ?? 50,
     interval: opts.interval ?? 3000,

@@ -12,6 +12,7 @@ import { ProofRulesStep } from "./proof-rules-step";
 import { ReviewAndSealStep } from "./review-and-seal-step";
 import { generateId } from "@/lib/ui/hashes";
 import { cn } from "@/lib/utils";
+import type { WagerTemplate } from "@/lib/wager/templates";
 
 const STEPS = [
   { label: "Parties", num: 1 },
@@ -22,7 +23,11 @@ const STEPS = [
   { label: "Review & Seal", num: 6 },
 ];
 
-export function PactBuilder() {
+interface PactBuilderProps {
+  template?: WagerTemplate | null;
+}
+
+export function PactBuilder({ template }: PactBuilderProps) {
   const [step, setStep] = useState(1);
 
   const methods = useForm<CreateWagerFormData>({
@@ -30,14 +35,14 @@ export function PactBuilder() {
     defaultValues: {
       wager_id: generateId(),
       opponent: "",
-      title: "",
+      title: template?.title || "",
       stake_amount: "",
       deadline_date: "",
       deadline_time: "",
-      win_condition: "",
-      loss_condition: "",
-      accepted_proof: "",
-      excluded_proof: "",
+      win_condition: template?.win_condition || "",
+      loss_condition: template?.loss_condition || "",
+      accepted_proof: template?.accepted_proof || "",
+      excluded_proof: template?.excluded_proof || "",
       resolution_question: "",
       appeal_standard: "",
       conflict_rule: "",
@@ -45,7 +50,7 @@ export function PactBuilder() {
       postponement_rule: "",
       evidence_window_hours: "24",
       appeal_window_hours: "12",
-      sources: [],
+      sources: template?.sources || [],
     },
     mode: "onBlur",
   });

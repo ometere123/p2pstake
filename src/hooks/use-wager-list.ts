@@ -36,7 +36,10 @@ export function useWagerList() {
   }, [address]);
 
   useEffect(() => {
-    load();
+    const timeout = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => window.clearTimeout(timeout);
   }, [load]);
 
   return { wagers, loading, refetch: load };

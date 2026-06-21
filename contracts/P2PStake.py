@@ -574,9 +574,13 @@ Return ONLY valid JSON:
 {{
   "outcome": "creator_wins | opponent_wins | refund | invalid",
   "winner": "creator | opponent | none",
-  "confidence": "high | medium | low",
+  "confidence": 0-100,
   "source_alignment": "strong | partial | weak | conflicting | none",
   "reason": "short reason under 240 characters",
+  "evidence_trace": "which findings supported the decision",
+  "rule_application": "which proof rules were applied or excluded",
+  "ambiguity_notes": "what was unclear or contested, if anything",
+  "manipulation_warnings": "any signs of fabricated or misleading evidence, or empty string",
   "source_fetch_attempted": true,
   "source_fetch_succeeded": false,
   "source_fetch_summary": "short status summary"
@@ -589,9 +593,10 @@ Return ONLY valid JSON:
             principle=(
                 "`outcome` must be exactly the same. "
                 "`winner` must be exactly the same. "
-                "`confidence` may differ by at most one adjacent band. "
+                "`confidence` is a number 0-100; values within 15 points of each other are equivalent. "
                 "`source_alignment` must be exactly the same. "
-                "`reason` and fetch summary wording may differ."
+                "`reason`, `evidence_trace`, `rule_application`, `ambiguity_notes`, "
+                "`manipulation_warnings`, and fetch summary wording may differ."
             ),
         )
 
@@ -1024,17 +1029,21 @@ Return ONLY valid JSON:
 
         outcome = str(result.get("outcome", "invalid"))
         winner = str(result.get("winner", "none"))
-        confidence = str(result.get("confidence", "low"))
         alignment = str(result.get("source_alignment", "none"))
+
+        # Numeric confidence 0-100
+        raw_conf = result.get("confidence", 50)
+        try:
+            confidence_num = int(float(str(raw_conf)))
+        except (ValueError, TypeError):
+            confidence_num = 50
+        confidence_num = max(0, min(100, confidence_num))
 
         if outcome not in VALID_OUTCOMES:
             outcome = "invalid"
 
         if winner not in VALID_WINNERS:
             winner = "none"
-
-        if confidence not in VALID_CONFIDENCE:
-            confidence = "low"
 
         if alignment not in VALID_ALIGNMENTS:
             alignment = "none"
@@ -1046,15 +1055,32 @@ Return ONLY valid JSON:
         elif outcome in ["refund", "invalid"]:
             winner = "none"
 
+        # Build structured summary from sub-fields
+        evidence_trace = self._truncate(str(result.get("evidence_trace", "")), MAX_REASON_CHARS)
+        rule_application = self._truncate(str(result.get("rule_application", "")), MAX_REASON_CHARS)
+        ambiguity_notes = self._truncate(str(result.get("ambiguity_notes", "")), MAX_REASON_CHARS)
+        manipulation_warnings = self._truncate(str(result.get("manipulation_warnings", "")), MAX_REASON_CHARS)
+
+        structured_summary = ""
+        if evidence_trace:
+            structured_summary += f"EVIDENCE: {evidence_trace} | "
+        if rule_application:
+            structured_summary += f"RULES: {rule_application} | "
+        if ambiguity_notes:
+            structured_summary += f"AMBIGUITY: {ambiguity_notes} | "
+        if manipulation_warnings:
+            structured_summary += f"WARNINGS: {manipulation_warnings}"
+        structured_summary = self._truncate(structured_summary.rstrip(" | "), MAX_FETCH_SUMMARY_CHARS)
+
         return {
             "outcome": outcome,
             "winner": winner,
-            "confidence": confidence,
+            "confidence": str(confidence_num),
             "source_alignment": alignment,
             "reason": self._normalize_reason(str(result.get("reason", ""))),
             "source_fetch_attempted": bool(result.get("source_fetch_attempted", False)),
             "source_fetch_succeeded": bool(result.get("source_fetch_succeeded", False)),
-            "source_fetch_summary": self._truncate(
+            "source_fetch_summary": structured_summary if structured_summary else self._truncate(
                 str(result.get("source_fetch_summary", "")),
                 MAX_FETCH_SUMMARY_CHARS,
             ),

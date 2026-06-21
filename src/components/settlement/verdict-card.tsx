@@ -15,7 +15,26 @@ const OUTCOME_CONFIG: Record<string, {
   invalid: { icon: XCircle, label: "Invalid", color: "text-p2p-red", bg: "border-p2p-red/30 bg-p2p-red/5" },
 };
 
-const CONFIDENCE_BARS: Record<string, number> = { high: 3, medium: 2, low: 1 };
+function parseConfidence(val: string): number {
+  const n = parseInt(val, 10);
+  if (!isNaN(n)) return Math.max(0, Math.min(100, n));
+  if (val === "high") return 85;
+  if (val === "medium") return 55;
+  return 25;
+}
+
+function parseStructuredSummary(summary: string) {
+  const sections: { label: string; text: string; color: string }[] = [];
+  const parts = summary.split(" | ");
+  for (const part of parts) {
+    if (part.startsWith("EVIDENCE:")) sections.push({ label: "Evidence Trace", text: part.slice(10).trim(), color: "text-p2p-blue" });
+    else if (part.startsWith("RULES:")) sections.push({ label: "Rule Application", text: part.slice(7).trim(), color: "text-p2p-green" });
+    else if (part.startsWith("AMBIGUITY:")) sections.push({ label: "Ambiguity Notes", text: part.slice(11).trim(), color: "text-p2p-gold" });
+    else if (part.startsWith("WARNINGS:")) sections.push({ label: "Manipulation Warnings", text: part.slice(10).trim(), color: "text-p2p-red" });
+    else if (part.trim()) sections.push({ label: "Source Assessment", text: part.trim(), color: "text-p2p-text-secondary" });
+  }
+  return sections;
+}
 
 const ALIGNMENT_COLORS: Record<string, string> = {
   strong: "text-p2p-green",
@@ -32,7 +51,8 @@ interface Props {
 export function VerdictCard({ resolution }: Props) {
   const config = OUTCOME_CONFIG[resolution.outcome] || OUTCOME_CONFIG.invalid;
   const Icon = config.icon;
-  const bars = CONFIDENCE_BARS[resolution.confidence] || 1;
+  const confidenceNum = parseConfidence(resolution.confidence);
+  const structuredSections = parseStructuredSummary(resolution.source_fetch_summary || "");
 
   return (
     <div className={`rounded-panel border p-5 ${config.bg}`}>
@@ -64,19 +84,17 @@ export function VerdictCard({ resolution }: Props) {
           <div className="text-[10px] uppercase tracking-wider text-p2p-text-secondary">
             Confidence
           </div>
-          <div className="mt-1 flex items-center gap-1.5">
-            <div className="flex gap-0.5">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className={`h-3 w-1.5 rounded-sm ${
-                    n <= bars ? "bg-p2p-blue" : "bg-p2p-border"
-                  }`}
-                />
-              ))}
+          <div className="mt-2 flex items-center gap-2">
+            <div className="relative h-2 flex-1 rounded-full bg-p2p-border">
+              <div
+                className={`absolute left-0 top-0 h-2 rounded-full ${
+                  confidenceNum >= 70 ? "bg-p2p-green" : confidenceNum >= 40 ? "bg-p2p-gold" : "bg-p2p-red"
+                }`}
+                style={{ width: `${confidenceNum}%` }}
+              />
             </div>
-            <span className="text-xs font-semibold capitalize">
-              {resolution.confidence}
+            <span className="font-mono text-sm font-bold text-p2p-text-primary">
+              {confidenceNum}
             </span>
           </div>
         </div>
@@ -102,51 +120,46 @@ export function VerdictCard({ resolution }: Props) {
         </p>
       </div>
 
-      {/* Source Assessment */}
-      {resolution.source_fetch_summary && (
-        <div className="mt-4 rounded-card border border-p2p-border bg-p2p-bg/50 p-3">
-          <div className="text-[10px] uppercase tracking-wider text-p2p-text-secondary">
-            Source Assessment
-          </div>
-          <p className="mt-1 text-xs text-p2p-text-secondary leading-relaxed whitespace-pre-wrap">
-            {resolution.source_fetch_summary}
-          </p>
+      {/* Structured verdict sub-sections */}
+      {structuredSections.length > 0 && (
+        <div className="mt-4 space-y-3">
+          {structuredSections.map((sec, i) => (
+            <div key={i} className="rounded-card border border-p2p-border bg-p2p-bg/50 p-3">
+              <div className={`text-[10px] font-semibold uppercase tracking-wider ${sec.color}`}>
+                {sec.label}
+              </div>
+              <p className="mt-1 text-xs text-p2p-text-secondary leading-relaxed">
+                {sec.text}
+              </p>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Evidence Trace */}
+      {/* Consensus method */}
       <div className="mt-4 rounded-card border border-p2p-border bg-p2p-bg/50 p-3">
         <div className="text-[10px] uppercase tracking-wider text-p2p-text-secondary">
-          Evidence Trace
+          Consensus Method
         </div>
         <div className="mt-2 space-y-1 text-xs text-p2p-text-secondary">
           <div className="flex items-center gap-1.5">
             {resolution.source_fetch_attempted ? (
               resolution.source_fetch_succeeded ? (
-                <>
-                  <CheckCircle className="h-3 w-3 text-p2p-green" />
-                  Source fetch attempted and succeeded
-                </>
+                <><CheckCircle className="h-3 w-3 text-p2p-green" />Source fetch succeeded</>
               ) : (
-                <>
-                  <AlertTriangle className="h-3 w-3 text-p2p-gold" />
-                  Source fetch attempted but failed — resolved from findings only
-                </>
+                <><AlertTriangle className="h-3 w-3 text-p2p-gold" />Source fetch failed — findings only</>
               )
             ) : (
-              <>
-                <AlertTriangle className="h-3 w-3 text-p2p-text-secondary" />
-                No source fetch attempted — resolved from submitted findings
-              </>
+              <><AlertTriangle className="h-3 w-3 text-p2p-text-secondary" />No source fetch — findings only</>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <Scale className="h-3 w-3 text-p2p-violet" />
-            Equivalence: outcome + winner + confidence + source_alignment
+            Equivalence: outcome + winner + confidence(±15) + source_alignment
           </div>
           <div className="flex items-center gap-1.5">
             <Shield className="h-3 w-3 text-p2p-blue" />
-            Validated via GenLayer prompt_comparative consensus
+            GenLayer prompt_comparative consensus
           </div>
         </div>
       </div>

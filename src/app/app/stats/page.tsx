@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { getAllWagerIds, getWager, getResolution } from "@/lib/genlayer/contract";
-import type { Wager, Resolution } from "@/lib/genlayer/types";
 import { formatGEN } from "@/lib/ui/format";
 import { Loader2, BarChart3, Scale, Coins, Users, Shield } from "lucide-react";
 

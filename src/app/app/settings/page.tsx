@@ -3,6 +3,7 @@
 import { useWalletStore } from "@/stores/wallet-store";
 import { addressUrl } from "@/lib/genlayer/explorer";
 import { getContractAddress } from "@/lib/genlayer/explorer";
+import { SessionSafetyPanel } from "@/components/guards/session-safety";
 import { ExternalLink } from "lucide-react";
 
 export default function SettingsPage() {
@@ -13,7 +14,7 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="font-display text-2xl font-bold">Settings</h1>
       <p className="mt-1 text-sm text-p2p-text-secondary">
-        Wallet and network information.
+        Wallet, network, and safety controls.
       </p>
 
       <div className="mt-8 rounded-panel border border-p2p-border bg-p2p-panel p-5 space-y-4">
@@ -49,6 +50,10 @@ export default function SettingsPage() {
             </a>
           </div>
         )}
+      </div>
+
+      <div className="mt-8">
+        <SessionSafetyPanel />
       </div>
     </div>
   );

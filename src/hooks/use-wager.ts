@@ -53,8 +53,11 @@ export function useWager(wagerId: string | null) {
   }, [wagerId, address]);
 
   useEffect(() => {
-    setLoading(true);
-    fetchData();
+    const timeout = window.setTimeout(() => {
+      setLoading(true);
+      void fetchData();
+    }, 0);
+    return () => window.clearTimeout(timeout);
   }, [fetchData]);
 
   useEffect(() => {

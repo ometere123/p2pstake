@@ -3,9 +3,18 @@ import { getChainConfig, getChainId, getRpcUrl } from "./chain";
 
 let clientInstance: ReturnType<typeof createClient> | null = null;
 
+function isMissingChainError(error: unknown): error is { code: 4902 } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: unknown }).code === 4902
+  );
+}
+
 export function getClient() {
   if (clientInstance) return clientInstance;
-  clientInstance = createClient({ chain: getChainConfig() as any });
+  clientInstance = createClient({ chain: getChainConfig() });
   return clientInstance;
 }
 
@@ -24,8 +33,8 @@ async function switchToStudioNet(): Promise<void> {
       method: "wallet_switchEthereumChain",
       params: [{ chainId: hexChainId }],
     });
-  } catch (switchError: any) {
-    if (switchError?.code === 4902) {
+  } catch (switchError: unknown) {
+    if (isMissingChainError(switchError)) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
@@ -67,7 +76,7 @@ export async function connectWallet(): Promise<{
   const chain = getChainConfig();
 
   clientInstance = createClient({
-    chain: chain as any,
+    chain,
     account: address as `0x${string}`,
   });
 

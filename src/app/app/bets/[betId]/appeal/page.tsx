@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useWager } from "@/hooks/use-wager";
 import { useContractWrite } from "@/hooks/use-contract-write";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { appealSchema, type AppealFormData } from "@/lib/wager/validation";
 import { appealResolution } from "@/lib/genlayer/contract";
@@ -41,6 +41,10 @@ export default function AppealPage() {
       finding_id: "",
       evidence_url: "",
     },
+  });
+  const selectedAppealCategory = useWatch({
+    control: form.control,
+    name: "appeal_category",
   });
 
   if (loading) {
@@ -154,7 +158,7 @@ export default function AppealPage() {
                 <label
                   key={cat.value}
                   className={`flex cursor-pointer items-start gap-3 rounded-card border p-3 transition ${
-                    form.watch("appeal_category") === cat.value
+                    selectedAppealCategory === cat.value
                       ? "border-p2p-blue bg-p2p-blue/5"
                       : "border-p2p-border bg-p2p-surface hover:border-p2p-text-secondary"
                   }`}

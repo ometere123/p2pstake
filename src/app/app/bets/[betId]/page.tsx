@@ -5,6 +5,8 @@ import { useWager } from "@/hooks/use-wager";
 import { PactSpine } from "@/components/pact/pact-spine";
 import { EvidenceTheater } from "@/components/evidence/evidence-theater";
 import { SettlementRail } from "@/components/settlement/settlement-rail";
+import { ActivityFeed } from "@/components/settlement/activity-feed";
+import { ShareWager } from "@/components/brand/share-wager";
 import { Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
@@ -49,6 +51,7 @@ export default function BetDetailPage() {
         <p className="mt-1 font-mono text-xs text-p2p-text-secondary">
           Wager ID: {betId}
         </p>
+        <ShareWager wagerId={betId} data={data} />
       </div>
 
       {/* Three-zone layout */}
@@ -72,6 +75,7 @@ export default function BetDetailPage() {
             Settlement Rail
           </div>
           <SettlementRail data={data} wagerId={betId} onAction={refetch} />
+          <ActivityFeed data={data} />
         </aside>
       </div>
     </div>

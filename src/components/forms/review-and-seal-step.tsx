@@ -9,7 +9,9 @@ import { createWager } from "@/lib/genlayer/contract";
 import { genToWei } from "@/lib/ui/format";
 import { localDateToUnix } from "@/lib/ui/time";
 import { useRouter } from "next/navigation";
-import { Lock, Shield, FileCheck, Loader2 } from "lucide-react";
+import { Lock, Shield, FileCheck, Loader2, AlertTriangle } from "lucide-react";
+import { isCoolingOff, isExcluded } from "@/components/guards/session-safety";
+import { useState, useEffect } from "react";
 
 interface Props {
   onPrev: () => void;
@@ -20,6 +22,16 @@ export function ReviewAndSealStep({ onPrev }: Props) {
   const { write, txHash, error, isPending } = useContractWrite();
   const router = useRouter();
   const data = getValues();
+
+  const selfExcluded = isExcluded();
+  const coolOff = isCoolingOff();
+  const [cooldownLeft, setCooldownLeft] = useState(coolOff ? 300 : 0);
+
+  useEffect(() => {
+    if (!coolOff || cooldownLeft <= 0) return;
+    const t = setInterval(() => setCooldownLeft((s) => Math.max(s - 1, 0)), 1000);
+    return () => clearInterval(t);
+  }, [coolOff, cooldownLeft]);
 
   const primarySources = data.sources?.filter((s) => !s.is_fallback) ?? [];
   const fallbackSources = data.sources?.filter((s) => s.is_fallback) ?? [];
@@ -155,6 +167,25 @@ export function ReviewAndSealStep({ onPrev }: Props) {
         </div>
       )}
 
+      {selfExcluded && (
+        <div className="flex items-start gap-2 rounded-card border border-p2p-red/30 bg-p2p-red/5 p-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-p2p-red" />
+          <p className="text-xs text-p2p-red">
+            Self-exclusion is active. You cannot create wagers during this period.
+            Manage in Settings.
+          </p>
+        </div>
+      )}
+
+      {coolOff && cooldownLeft > 0 && !selfExcluded && (
+        <div className="flex items-start gap-2 rounded-card border border-p2p-gold/30 bg-p2p-gold/5 p-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-p2p-gold" />
+          <p className="text-xs text-p2p-gold">
+            Cooling-off mode is active. You can seal in {Math.floor(cooldownLeft / 60)}m {cooldownLeft % 60}s.
+          </p>
+        </div>
+      )}
+
       <div className="flex justify-between">
         <Button
           variant="outline"
@@ -166,7 +197,7 @@ export function ReviewAndSealStep({ onPrev }: Props) {
         </Button>
         <Button
           onClick={onSeal}
-          disabled={isPending || !!txHash}
+          disabled={isPending || !!txHash || selfExcluded || (coolOff && cooldownLeft > 0)}
           className="gap-2 bg-p2p-violet text-white hover:bg-p2p-violet/90"
         >
           {isPending ? (

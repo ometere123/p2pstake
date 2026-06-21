@@ -100,13 +100,13 @@ export interface Finding {
 export interface Resolution {
   outcome: ResolutionOutcome;
   winner: "creator" | "opponent" | "none";
-  confidence: Confidence;
+  confidence: string; // numeric 0-100 as string from contract
   source_alignment: SourceAlignment;
   reason: string;
   resolved_at_unix: string;
   source_fetch_attempted: boolean;
   source_fetch_succeeded: boolean;
-  source_fetch_summary: string;
+  source_fetch_summary: string; // structured: EVIDENCE: ... | RULES: ... | AMBIGUITY: ... | WARNINGS: ...
 }
 
 export interface AppealRecord {

@@ -14,7 +14,14 @@ interface WalletState {
   reconnect: () => Promise<void>;
 }
 
-function setupListeners(set: any) {
+type WalletSet = (
+  partial:
+    | WalletState
+    | Partial<WalletState>
+    | ((state: WalletState) => WalletState | Partial<WalletState>)
+) => void;
+
+function setupListeners(set: WalletSet) {
   if (typeof window === "undefined" || !window.ethereum) return;
   const expectedChainId = getChainId();
 
@@ -25,7 +32,7 @@ function setupListeners(set: any) {
       set({ address: null, isConnected: false, isCorrectNetwork: false, chainId: null });
     } else {
       const addr = accs[0];
-      setClient(createClient({ chain: getChainConfig() as any, account: addr as `0x${string}` }));
+      setClient(createClient({ chain: getChainConfig(), account: addr as `0x${string}` }));
       set({ address: addr });
     }
   });
@@ -102,7 +109,7 @@ export const useWalletStore = create<WalletState>((set) => ({
 
         setClient(
           createClient({
-            chain: getChainConfig() as any,
+            chain: getChainConfig(),
             account: address as `0x${string}`,
           })
         );

@@ -1,5 +1,12 @@
 import { z } from "zod/v4";
 
+const genlayerAddressSchema = z
+  .string()
+  .regex(
+    /^0x(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$/,
+    "Enter a valid 0x wallet address"
+  );
+
 export const sourceSchema = z.object({
   source_id: z.string().min(1, "Source ID is required"),
   source_type: z.enum([
@@ -19,9 +26,12 @@ export const sourceSchema = z.object({
 
 export const createWagerSchema = z.object({
   wager_id: z.string().min(1),
-  opponent: z.string().min(1, "Opponent address is required"),
+  opponent: genlayerAddressSchema,
   title: z.string().min(1, "Title is required"),
-  stake_amount: z.string().min(1, "Stake amount is required"),
+  stake_amount: z
+    .string()
+    .min(1, "Stake amount is required")
+    .refine((value) => Number(value) > 0, "Stake amount must be greater than 0"),
   deadline_date: z.string().min(1, "Deadline date is required"),
   deadline_time: z.string().min(1, "Deadline time is required"),
   win_condition: z.string().min(1, "Win condition is required"),
@@ -39,6 +49,34 @@ export const createWagerSchema = z.object({
     .array(sourceSchema)
     .min(1, "At least one evidence source is required")
     .max(5, "Maximum 5 sources"),
+}).superRefine((data, ctx) => {
+  const deadlineMs = new Date(`${data.deadline_date}T${data.deadline_time}`).getTime();
+
+  if (Number.isNaN(deadlineMs) || deadlineMs <= Date.now()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["deadline_date"],
+      message: "Deadline must be in the future",
+    });
+  }
+
+  if (!data.sources.some((source) => !source.is_fallback)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["sources"],
+      message: "At least one primary evidence source is required",
+    });
+  }
+
+  data.sources.forEach((source, index) => {
+    if (source.source_type !== "manual_witness" && source.url.trim() === "") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["sources", index, "url"],
+        message: "URL is required for this source type",
+      });
+    }
+  });
 });
 
 export const findingSchema = z.object({

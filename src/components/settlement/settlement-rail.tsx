@@ -10,7 +10,7 @@ import {
   claimPayout,
   claimRefund,
 } from "@/lib/genlayer/contract";
-import { genToWei, formatGEN } from "@/lib/ui/format";
+import { formatGEN } from "@/lib/ui/format";
 import { isDeadlinePassed, deadlineCountdown, unixToRelative } from "@/lib/ui/time";
 import { TxHashLink } from "@/components/brand/tx-hash-link";
 import { Button } from "@/components/ui/button";

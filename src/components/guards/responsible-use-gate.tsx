@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, AlertTriangle } from "lucide-react";
 
@@ -26,12 +26,10 @@ export function checkBlockedCategory(text: string): string | null {
 }
 
 export function ResponsibleUseGate({ children }: { children: React.ReactNode }) {
-  const [acknowledged, setAcknowledged] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    setAcknowledged(stored === "true");
-  }, []);
+  const [acknowledged, setAcknowledged] = useState<boolean | null>(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(STORAGE_KEY) === "true";
+  });
 
   if (acknowledged === null) return null;
 
