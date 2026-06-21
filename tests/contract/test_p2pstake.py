@@ -6,7 +6,7 @@ P2PStake contract on GenLayer StudioNet. They can be run with the
 genlayer-test framework (pytest + genlayer-py) in integration mode,
 or verified manually via the GenLayer CLI.
 
-Contract: 0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f
+Contract: 0x17498774ee3da2bE34565565D377A00A4eA672cD
 Network: StudioNet (chain 61999)
 
 Manual CLI verification commands are provided as comments.
@@ -92,7 +92,7 @@ Manual CLI verification commands are provided as comments.
 
 # ─── CLI Smoke Test Commands ───
 #
-# Replace <ADDR> with: 0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f
+# Replace <ADDR> with: 0x17498774ee3da2bE34565565D377A00A4eA672cD
 #
 # A. genlayer call --contract <ADDR> --method get_all_wager_ids
 #    Expected: [] (empty list on fresh contract)

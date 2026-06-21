@@ -28,9 +28,9 @@ Frontend (Next.js on Vercel)  ←→  GenLayer StudioNet (P2PStake.py)
 
 ## Deployed Contract
 
-- **Address:** `0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f`
+- **Address:** `0x17498774ee3da2bE34565565D377A00A4eA672cD`
 - **Network:** GenLayer StudioNet (chain ID 61999)
-- **Explorer:** [View on Explorer](https://explorer-studio.genlayer.com/address/0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f)
+- **Explorer:** [View on Explorer](https://explorer-studio.genlayer.com/address/0x17498774ee3da2bE34565565D377A00A4eA672cD)
 
 ## Contract Methods
 
@@ -83,7 +83,7 @@ Frontend (Next.js on Vercel)  ←→  GenLayer StudioNet (P2PStake.py)
    ```
 3. Set the contract address in `.env.local`:
    ```
-   NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS=0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f
+   NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS=0x17498774ee3da2bE34565565D377A00A4eA672cD
    NEXT_PUBLIC_GENLAYER_CHAIN_ID=61999
    NEXT_PUBLIC_GENLAYER_RPC_URL=https://studio.genlayer.com/api
    NEXT_PUBLIC_GENLAYER_EXPLORER_URL=https://explorer-studio.genlayer.com

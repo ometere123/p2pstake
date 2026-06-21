@@ -1,6 +1,6 @@
 # P2PStake Contract Method Reference
 
-Contract: `0x6eD42480D4011a1cc4e5078f5351Fa0CfC873B8f`
+Contract: `0x17498774ee3da2bE34565565D377A00A4eA672cD`
 Network: GenLayer StudioNet (chain 61999)
 
 ## create_wager
