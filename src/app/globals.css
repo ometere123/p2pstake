@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── P2PStake Design Tokens (Tailwind v4 @theme) ─── */
+
+@theme inline {
+  /* P2PStake palette */
+  --color-p2p-bg: #07080D;
+  --color-p2p-panel: #10131D;
+  --color-p2p-surface: #161A26;
+  --color-p2p-text-primary: #F4F7FB;
+  --color-p2p-text-secondary: #9BA6B6;
+  --color-p2p-border: #2A3040;
+  --color-p2p-blue: #3A86FF;
+  --color-p2p-violet: #8B5CF6;
+  --color-p2p-gold: #F5B841;
+  --color-p2p-green: #2EE59D;
+  --color-p2p-red: #FF4D6D;
+  --color-p2p-grey: #6B7280;
+
+  /* Fonts */
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Custom radii */
+  --radius-panel: 20px;
+  --radius-card: 16px;
+  --radius-badge: 9999px;
+
+  /* shadcn mappings */
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ─── shadcn dark theme mapped to P2PStake palette ─── */
+
+:root {
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: #07080D;
+  --foreground: #F4F7FB;
+  --card: #10131D;
+  --card-foreground: #F4F7FB;
+  --popover: #10131D;
+  --popover-foreground: #F4F7FB;
+  --primary: #3A86FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #161A26;
+  --secondary-foreground: #F4F7FB;
+  --muted: #161A26;
+  --muted-foreground: #9BA6B6;
+  --accent: #161A26;
+  --accent-foreground: #F4F7FB;
+  --destructive: #FF4D6D;
+  --border: #2A3040;
+  --input: #2A3040;
+  --ring: #3A86FF;
+  --chart-1: #3A86FF;
+  --chart-2: #8B5CF6;
+  --chart-3: #2EE59D;
+  --chart-4: #F5B841;
+  --chart-5: #FF4D6D;
+  --sidebar: #10131D;
+  --sidebar-foreground: #F4F7FB;
+  --sidebar-primary: #3A86FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #161A26;
+  --sidebar-accent-foreground: #F4F7FB;
+  --sidebar-border: #2A3040;
+  --sidebar-ring: #3A86FF;
+}
+
+/* ─── Base overrides ─── */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background: var(--color-p2p-bg);
+    color: var(--color-p2p-text-primary);
+    font-family: var(--font-body);
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ─── Scrollbar ─── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-p2p-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-p2p-border);
+  border-radius: 3px;
+}
+
+/* ─── Selection ─── */
+
+::selection {
+  background: var(--color-p2p-blue);
+  color: var(--color-p2p-text-primary);
+}
