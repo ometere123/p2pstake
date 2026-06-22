@@ -44,7 +44,7 @@ export const TAGLINES = {
 
 export const APPEAL_OUTCOME_LABELS: Record<string, string> = {
   uphold: "Original resolution upheld",
-  reverse: "Resolution reversed — winner flipped",
+  reverse: "Resolution reversed: winner flipped",
   refund: "Both sides refunded",
   invalid: "Wager marked invalid",
   reopen_review: "Reopened for new evidence and re-resolution",

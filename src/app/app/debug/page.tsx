@@ -120,7 +120,7 @@ export default function DebugPage() {
           )}
           <div className="flex items-center justify-between">
             <span className="text-p2p-text-secondary">Chain ID</span>
-            <span className="font-mono text-xs">{chainId ?? "—"}</span>
+            <span className="font-mono text-xs">{chainId ?? "-"}</span>
           </div>
         </div>
       </div>

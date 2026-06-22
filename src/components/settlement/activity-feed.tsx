@@ -28,7 +28,7 @@ export function ActivityFeed({ data }: { data: WagerDetail }) {
   if (wager.state !== "INVITED" && wager.state !== "CANCELLED") {
     activities.push({
       icon: Shield,
-      label: "Terms accepted — sources locked",
+      label: "Terms accepted; sources locked",
       time: "",
       color: "text-p2p-violet",
       detail: `by ${truncateAddress(wager.opponent)}`,
@@ -58,7 +58,7 @@ export function ActivityFeed({ data }: { data: WagerDetail }) {
   if (wager.creator_funded && wager.opponent_funded) {
     activities.push({
       icon: CheckCircle,
-      label: "Stake locked — both sides funded",
+      label: "Stake locked; both sides funded",
       time: "",
       color: "text-p2p-violet",
     });

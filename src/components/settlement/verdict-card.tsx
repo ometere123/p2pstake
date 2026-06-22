@@ -147,10 +147,10 @@ export function VerdictCard({ resolution }: Props) {
               resolution.source_fetch_succeeded ? (
                 <><CheckCircle className="h-3 w-3 text-p2p-green" />Source fetch succeeded</>
               ) : (
-                <><AlertTriangle className="h-3 w-3 text-p2p-gold" />Source fetch failed — findings only</>
+                <><AlertTriangle className="h-3 w-3 text-p2p-gold" />Source fetch failed: findings only</>
               )
             ) : (
-              <><AlertTriangle className="h-3 w-3 text-p2p-text-secondary" />No source fetch — findings only</>
+              <><AlertTriangle className="h-3 w-3 text-p2p-text-secondary" />No source fetch: findings only</>
             )}
           </div>
           <div className="flex items-center gap-1.5">

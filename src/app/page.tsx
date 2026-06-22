@@ -8,7 +8,7 @@ const STEPS = [
   {
     icon: FileCheck,
     title: "Any clear bet",
-    desc: "Deployment deadlines, PR merges, tweet milestones, fitness goals — any plain-English condition.",
+    desc: "Deployment deadlines, PR merges, tweet milestones, fitness goals: any plain-English condition.",
   },
   {
     icon: Lock,
@@ -36,7 +36,7 @@ const EXAMPLES = [
   "Landing page deployed before Sunday 9pm",
   "Pull request merged before demo day",
   "Tweet reaches 10K likes before Monday",
-  "Gym 5 times this week — verified by app",
+  "Gym 5 times this week: verified by app",
   "Bug still open tomorrow morning",
   "Payment received on-chain before Friday",
 ];

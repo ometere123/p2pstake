@@ -87,7 +87,7 @@ export function ReviewAndSealStep({ onPrev }: Props) {
       <div className="space-y-4">
         <div className="rounded-card border border-p2p-border bg-p2p-surface p-4">
           <div className="text-[10px] uppercase tracking-wider text-p2p-text-secondary">Title</div>
-          <div className="mt-1 text-sm font-semibold">{data.title || "—"}</div>
+          <div className="mt-1 text-sm font-semibold">{data.title || "-"}</div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -105,12 +105,12 @@ export function ReviewAndSealStep({ onPrev }: Props) {
 
         <div className="rounded-card border border-p2p-border bg-p2p-surface p-4">
           <div className="text-[10px] uppercase tracking-wider text-p2p-green">Win Condition</div>
-          <div className="mt-1 text-sm">{data.win_condition || "—"}</div>
+          <div className="mt-1 text-sm">{data.win_condition || "-"}</div>
         </div>
 
         <div className="rounded-card border border-p2p-border bg-p2p-surface p-4">
           <div className="text-[10px] uppercase tracking-wider text-p2p-red">Loss Condition</div>
-          <div className="mt-1 text-sm">{data.loss_condition || "—"}</div>
+          <div className="mt-1 text-sm">{data.loss_condition || "-"}</div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -118,13 +118,13 @@ export function ReviewAndSealStep({ onPrev }: Props) {
             <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-p2p-blue">
               <FileCheck className="h-3 w-3" /> Accepted Proof
             </div>
-            <div className="mt-1 text-xs text-p2p-text-secondary">{data.accepted_proof || "—"}</div>
+            <div className="mt-1 text-xs text-p2p-text-secondary">{data.accepted_proof || "-"}</div>
           </div>
           <div className="rounded-card border border-p2p-border bg-p2p-surface p-4">
             <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-p2p-gold">
               <Shield className="h-3 w-3" /> Excluded Proof
             </div>
-            <div className="mt-1 text-xs text-p2p-text-secondary">{data.excluded_proof || "—"}</div>
+            <div className="mt-1 text-xs text-p2p-text-secondary">{data.excluded_proof || "-"}</div>
           </div>
         </div>
 
@@ -136,12 +136,12 @@ export function ReviewAndSealStep({ onPrev }: Props) {
           <div className="mt-2 space-y-2">
             {primarySources.map((s, i) => (
               <div key={i} className="text-xs">
-                <span className="text-p2p-blue">Primary:</span> {s.label} — {s.url}
+                <span className="text-p2p-blue">Primary:</span> {s.label}: {s.url}
               </div>
             ))}
             {fallbackSources.map((s, i) => (
               <div key={i} className="text-xs text-p2p-text-secondary">
-                <span>Fallback:</span> {s.label} — {s.url}
+                <span>Fallback:</span> {s.label}: {s.url}
               </div>
             ))}
           </div>

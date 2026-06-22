@@ -54,9 +54,9 @@ npm run build
 
 ## Post-Deployment Verification
 
-1. Visit `/app/debug` — all 4 env vars green, RPC + contract reachable
-2. Connect wallet on `/app` — MetaMask prompts, chain ID 61999
-3. Create a test wager on `/app/create` — tx hash links to explorer
+1. Visit `/app/debug`: all 4 env vars green, RPC + contract reachable
+2. Connect wallet on `/app`: MetaMask prompts, chain ID 61999
+3. Create a test wager on `/app/create`: tx hash links to explorer
 4. Contract address in navbar links to explorer
 
 ## Redeployment

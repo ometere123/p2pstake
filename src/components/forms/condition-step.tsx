@@ -38,7 +38,7 @@ export function ConditionStep({ onNext, onPrev }: Props) {
       <div>
         <h2 className="font-display text-lg font-semibold">Step 3: Condition</h2>
         <p className="mt-1 text-sm text-p2p-text-secondary">
-          Define the plain-English bet. Be specific — this is what GenLayer will judge.
+          Define the plain-English bet. Be specific: this is what GenLayer will judge.
         </p>
       </div>
 

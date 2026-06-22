@@ -8,7 +8,7 @@ P2PStake is a GenLayer-native peer-to-peer wager escrow where two people lock st
 
 Normal smart contracts can hold funds, but they cannot understand a human bet. P2PStake uses GenLayer's Intelligent Contracts to adjudicate plain-English conditions using locked terms, locked sources, and decentralized AI-validator consensus.
 
-If you remove the GenLayer logo, the product still obviously needs GenLayer — because the app is not just holding funds, it is adjudicating a human condition using locked terms, locked sources, and decentralized judgement.
+If you remove the GenLayer logo, the product still obviously needs GenLayer, because the app is not just holding funds, it is adjudicating a human condition using locked terms, locked sources, and decentralized judgement.
 
 ## Why Source-Locked Evidence
 
@@ -24,7 +24,7 @@ Frontend (Next.js on Vercel)  ←→  GenLayer StudioNet (P2PStake.py)
 
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS v4, shadcn/ui, Zustand, genlayer-js 1.1.8
 - **Contract:** Single Python Intelligent Contract deployed to GenLayer StudioNet
-- **No backend, no database, no Docker** — the contract is the single source of truth
+- **No backend, no database, no Docker**: the contract is the single source of truth
 
 ## Deployed Contract
 
@@ -38,7 +38,7 @@ Frontend (Next.js on Vercel)  ←→  GenLayer StudioNet (P2PStake.py)
 | Method | Purpose |
 |--------|---------|
 | `create_wager` | Create a wager with locked evidence sources |
-| `accept_wager` | Opponent accepts — sources lock |
+| `accept_wager` | Opponent accepts; sources lock |
 | `fund_wager` | Fund one side (payable, sends GEN) |
 | `submit_source_finding` | Submit evidence tied to a locked source |
 | `request_resolution` | Ask GenLayer validators to settle |
@@ -135,11 +135,11 @@ See `tests/e2e/smoke.spec.ts` for browser smoke test checklist.
 
 ## Known Limitations
 
-- Testnet stakes only — not a real-money gambling product
+- Testnet stakes only: not a real-money gambling product
 - Not legal advice
 - Not available for illegal or harmful wagers
 - Source timestamps may be evidence claims, not absolute truth
 - Web fetch/render availability depends on GenLayer environment support
 - Some external sites may block automated fetch or render
 - Appeal mechanics are simplified for demo (one appeal per wager)
-- P2PStake does not trust frontend time — the wager deadline is locked in the contract, user-submitted timestamps are treated as evidence claims, not truth
+- P2PStake does not trust frontend time: the wager deadline is locked in the contract, user-submitted timestamps are treated as evidence claims, not truth

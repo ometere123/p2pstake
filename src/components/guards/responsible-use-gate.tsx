@@ -93,7 +93,7 @@ export function ResponsibleUseGate({ children }: { children: React.ReactNode }) 
           }}
           className="mt-6 w-full bg-p2p-blue text-white hover:bg-p2p-blue/90"
         >
-          I understand — I am 18+ and this is testnet only
+          I understand: I am 18+ and this is testnet only
         </Button>
       </div>
     </div>

@@ -127,7 +127,7 @@ export const useWalletStore = create<WalletState>((set) => ({
         }
       }
     } catch {
-      // silently fail — user will see connect button
+      // Silently fail; user will see connect button.
     }
   },
 }));

@@ -12,13 +12,13 @@
  * Full Lifecycle:
  *
  * LANDING PAGE
- * [ ] Visit / — hero loads with "Lock the bet. Lock the proof." copy
+ * [ ] Visit /: hero loads with "Lock the bet. Lock the proof." copy
  * [ ] "Create Source-Locked Bet" CTA links to /app/create
  * [ ] Demo bet card shows pact/sources/verdict layers
  * [ ] Footer shows contract address linked to explorer
  *
  * DEBUG PAGE
- * [ ] Visit /app/debug — all 4 env vars show green
+ * [ ] Visit /app/debug: all 4 env vars show green
  * [ ] RPC reachable: green
  * [ ] Contract reachable: green
  * [ ] Wallet info displays after connection
@@ -28,17 +28,17 @@
  * [ ] NetworkPill shows "StudioNet" in green
  * [ ] WalletPill shows truncated address linked to explorer
  * [ ] ContractAddressPill shows truncated address linked to explorer
- * [ ] Disconnect works — returns to connect screen
+ * [ ] Disconnect works; returns to connect screen
  *
  * CREATE WAGER (Wallet A = Creator)
  * [ ] Navigate to /app/create
  * [ ] Step 1: creator auto-filled, enter opponent address
  * [ ] Step 2: enter stake amount (e.g. 1 GEN)
  * [ ] Step 3: enter title, win condition, loss condition, deadline
- * [ ] Step 4: add primary source — blocked without one
+ * [ ] Step 4: add primary source; blocked without one
  * [ ]   - add source with label, type, URL, description
  * [ ]   - optionally add fallback source
- * [ ] Step 5: enter accepted proof and excluded proof — blocked without both
+ * [ ] Step 5: enter accepted proof and excluded proof; blocked without both
  * [ ] Step 6: review all terms
  * [ ]   - sources listed with primary/fallback labels
  * [ ]   - "Seal Bet Terms" → MetaMask prompts → tx submitted
@@ -87,7 +87,7 @@
  * [ ] State = RESOLVED
  * [ ] Appeal window countdown shows
  *
- * APPEAL (Optional — Wallet B)
+ * APPEAL (Optional: Wallet B)
  * [ ] "Appeal With Evidence" link appears in settlement rail
  * [ ] Click → appeal page loads with original resolution summary
  * [ ] Select category, enter reason

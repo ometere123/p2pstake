@@ -15,7 +15,7 @@ export function Footer() {
           exploitative, or unverifiable bets are not allowed.
         </p>
         <div className="flex items-center gap-4">
-          <span>Testnet only — not real money</span>
+          <span>Testnet only: not real money</span>
           {isContractAddressSet() && (
             <a
               href={addressUrl(addr)}

@@ -56,7 +56,7 @@ export function ProofRulesStep({ onNext, onPrev }: Props) {
           )}
         </div>
 
-        {/* Edge case rules — gives P2PStake structured term coverage */}
+        {/* Edge case rules: gives P2PStake structured term coverage */}
         <div className="border-t border-p2p-border pt-4">
           <h3 className="text-sm font-semibold text-p2p-text-primary">Edge Case Rules</h3>
           <p className="mt-1 text-xs text-p2p-text-secondary">

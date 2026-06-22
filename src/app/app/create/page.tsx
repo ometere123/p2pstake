@@ -20,7 +20,7 @@ export default function CreatePage() {
       {!selectedTemplate && (
         <div className="mx-auto max-w-3xl mb-8">
           <h2 className="text-sm font-semibold text-p2p-text-secondary uppercase tracking-wider">
-            Quick Start — Use a Template
+            Quick Start: Use a Template
           </h2>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
             {DEMO_TEMPLATES.map((t) => (

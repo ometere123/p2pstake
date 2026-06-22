@@ -19,8 +19,8 @@ export default function GuidePage() {
         <div className="mt-4 space-y-3">
           {[
             { icon: FileCheck, step: "1", label: "Create wager with locked sources" },
-            { icon: Shield, step: "2", label: "Opponent accepts — sources lock" },
-            { icon: Lock, step: "3", label: "Both sides fund — stake locks" },
+            { icon: Shield, step: "2", label: "Opponent accepts; sources lock" },
+            { icon: Lock, step: "3", label: "Both sides fund; stake locks" },
             { icon: FileCheck, step: "4", label: "Submit source-tied findings" },
             { icon: Scale, step: "5", label: "Request GenLayer resolution" },
             { icon: Gavel, step: "6", label: "Appeal (optional) → Finalize → Claim" },
@@ -70,7 +70,7 @@ export default function GuidePage() {
                       <span className={s.is_fallback ? "text-p2p-text-secondary" : "text-p2p-blue"}>
                         {s.is_fallback ? "Fallback" : "Primary"}:
                       </span>{" "}
-                      {s.label} — {s.url}
+                      {s.label}: {s.url}
                     </div>
                   ))}
                 </div>

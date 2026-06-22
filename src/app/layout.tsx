@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "P2PStake — Source-Locked Wager Escrow",
+  title: "P2PStake - Source-Locked Wager Escrow",
   description:
     "Plain english bets. Source-locked evidence. GenLayer settlement. P2PStake lets two people stake GEN behind any clear condition with locked proof sources.",
   icons: {

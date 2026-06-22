@@ -94,7 +94,7 @@ export function FindingSubmitModal({ wagerId, sources, onSubmitted }: Props) {
         </p>
 
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
-          {/* Source select — locked sources only */}
+          {/* Source select: locked sources only */}
           <div>
             <Label className="text-xs text-p2p-text-secondary">Locked Source</Label>
             <select

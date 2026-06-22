@@ -204,7 +204,7 @@ export default function AppealPage() {
               <option value="">None</option>
               {findings.map((f) => (
                 <option key={f.finding_id} value={f.finding_id}>
-                  {f.finding_id} — {f.finding.slice(0, 60)}...
+                  {f.finding_id}: {f.finding.slice(0, 60)}...
                 </option>
               ))}
             </select>
