@@ -8,11 +8,26 @@ const EXCLUSION_KEY = "p2pstake_self_exclusion_until";
 const COOLOFF_KEY = "p2pstake_cooling_off";
 const SESSION_START_KEY = "p2pstake_session_start";
 
+function getExclusionState(): { excluded: boolean; label: string } {
+  if (typeof window === "undefined") return { excluded: false, label: "" };
+
+  const until = Number(localStorage.getItem(EXCLUSION_KEY) || "0");
+  if (until <= Date.now()) return { excluded: false, label: "" };
+
+  const hoursLeft = Math.ceil((until - Date.now()) / 3600000);
+  return {
+    excluded: true,
+    label: hoursLeft > 24 ? `${Math.ceil(hoursLeft / 24)}d` : `${hoursLeft}h`,
+  };
+}
+
 export function useSessionSafety() {
   const [sessionMinutes, setSessionMinutes] = useState(0);
-  const [coolingOff, setCoolingOff] = useState(false);
-  const [excluded, setExcluded] = useState(false);
-  const [exclusionLabel, setExclusionLabel] = useState("");
+  const [coolingOff, setCoolingOff] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(COOLOFF_KEY) === "true";
+  });
+  const [exclusion, setExclusion] = useState(getExclusionState);
 
   useEffect(() => {
     // Session timer
@@ -24,17 +39,6 @@ export function useSessionSafety() {
     const interval = setInterval(() => {
       setSessionMinutes(Math.floor((Date.now() - start) / 60000));
     }, 30000);
-
-    // Cooling off
-    setCoolingOff(localStorage.getItem(COOLOFF_KEY) === "true");
-
-    // Self-exclusion
-    const until = Number(localStorage.getItem(EXCLUSION_KEY) || "0");
-    if (until > Date.now()) {
-      setExcluded(true);
-      const hoursLeft = Math.ceil((until - Date.now()) / 3600000);
-      setExclusionLabel(hoursLeft > 24 ? `${Math.ceil(hoursLeft / 24)}d` : `${hoursLeft}h`);
-    }
 
     return () => clearInterval(interval);
   }, []);
@@ -48,17 +52,26 @@ export function useSessionSafety() {
   const selfExclude = (hours: number) => {
     const until = Date.now() + hours * 3600000;
     localStorage.setItem(EXCLUSION_KEY, String(until));
-    setExcluded(true);
-    setExclusionLabel(hours > 24 ? `${Math.ceil(hours / 24)}d` : `${hours}h`);
+    setExclusion({
+      excluded: true,
+      label: hours > 24 ? `${Math.ceil(hours / 24)}d` : `${hours}h`,
+    });
   };
 
   const clearExclusion = () => {
     localStorage.removeItem(EXCLUSION_KEY);
-    setExcluded(false);
-    setExclusionLabel("");
+    setExclusion({ excluded: false, label: "" });
   };
 
-  return { sessionMinutes, coolingOff, toggleCoolOff, excluded, exclusionLabel, selfExclude, clearExclusion };
+  return {
+    sessionMinutes,
+    coolingOff,
+    toggleCoolOff,
+    excluded: exclusion.excluded,
+    exclusionLabel: exclusion.label,
+    selfExclude,
+    clearExclusion,
+  };
 }
 
 export function isCoolingOff(): boolean {

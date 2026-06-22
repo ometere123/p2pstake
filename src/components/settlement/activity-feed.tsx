@@ -14,7 +14,7 @@ interface Activity {
 }
 
 export function ActivityFeed({ data }: { data: WagerDetail }) {
-  const { wager, sources, findings, resolution, appeal } = data;
+  const { wager, findings, resolution, appeal } = data;
   const activities: Activity[] = [];
 
   activities.push({
