@@ -12,7 +12,10 @@ import { Menu, X } from "lucide-react";
 const NAV_LINKS = [
   { href: "/app", label: "Dashboard" },
   { href: "/app/create", label: "Create" },
+  { href: "/app/history", label: "History" },
   { href: "/app/stats", label: "Stats" },
+  { href: "/app/guide", label: "Guide" },
+  { href: "/app/settings", label: "Settings" },
   { href: "/app/debug", label: "Debug" },
 ];
 
