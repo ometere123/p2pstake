@@ -55,8 +55,15 @@ export function EvidenceTheater({ data, onFindingSubmitted }: Props) {
       )}
 
       {/* Verdict */}
-      {data.resolution && (
+      {data.resolution && !["reopen_review", "more_evidence_required"].includes(data.appeal?.outcome || "") && (
         <VerdictCard resolution={data.resolution} />
+      )}
+
+      {data.appeal && ["reopen_review", "more_evidence_required"].includes(data.appeal.outcome) && (
+        <div className="rounded-card border border-p2p-gold/30 bg-p2p-gold/5 p-4 text-sm text-p2p-text-secondary">
+          <div className="font-semibold text-p2p-gold">Verdict reopened</div>
+          <p className="mt-1">Submit a new source-tied finding with a fetchable evidence URL before requesting re-resolution.</p>
+        </div>
       )}
 
       {findings.length === 0 && sources.length > 0 && (

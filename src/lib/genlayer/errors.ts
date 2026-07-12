@@ -33,6 +33,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   TOO_MANY_FINDINGS: "Maximum 10 findings per wager.",
   RESOLUTION_NOT_READY: "Cannot resolve yet. Check that the deadline has passed, at least one finding exists, and sources are locked.",
   WAGER_ALREADY_RESOLVED: "This wager has already been resolved.",
+  NEW_EVIDENCE_REQUIRED: "Submit a new source-tied finding after the appeal before requesting re-resolution.",
+  NEW_EVIDENCE_URL_REQUIRED: "New appeal evidence must include a fetchable URL.",
   APPEAL_WINDOW_CLOSED: "The appeal window has expired.",
   APPEAL_WINDOW_STILL_OPEN: "The appeal window has not expired yet. Wait before finalizing.",
   APPEAL_ALREADY_SUBMITTED: "An appeal has already been submitted for this wager.",

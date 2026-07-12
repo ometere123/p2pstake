@@ -101,6 +101,14 @@ export const appealSchema = z.object({
   appeal_reason: z.string().min(1, "Appeal reason is required"),
   finding_id: z.string().optional(),
   evidence_url: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.appeal_category === "new_evidence" && !data.evidence_url?.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["evidence_url"],
+      message: "A fetchable evidence URL is required for new-evidence appeals",
+    });
+  }
 });
 
 export type CreateWagerFormData = z.infer<typeof createWagerSchema>;

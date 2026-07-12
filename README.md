@@ -1,8 +1,12 @@
-# P2PStake
+<p align="center">
+  <img src="public/logo.svg" alt="P2PStake shield and lock logo" width="96" height="96" />
+</p>
 
-**Lock the bet. Lock the proof. Let GenLayer settle it.**
+<h1 align="center">P2PStake</h1>
 
-**[Live Demo](https://p2pstake.vercel.app/)**
+<p align="center"><strong>Lock the bet. Lock the proof. Let GenLayer settle it.</strong></p>
+
+<p align="center"><strong><a href="https://p2pstake.vercel.app/">Live Demo</a></strong></p>
 
 > **TESTNET / STUDIONET ONLY. NOT REAL-MONEY GAMBLING.**
 >
@@ -73,9 +77,9 @@ GenLayer consensus reviews the locked terms, proof rules, and source-tied eviden
 
 **Contract:** `P2PStake`
 **File:** [`contracts/P2PStake.py`](contracts/P2PStake.py)
-**Deployed address:** `0x17498774ee3da2bE34565565D377A00A4eA672cD`
+**Deployed address:** `0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2`
 **Network:** GenLayer StudioNet (chain ID 61999)
-**Explorer:** [View on Explorer](https://explorer-studio.genlayer.com/address/0x17498774ee3da2bE34565565D377A00A4eA672cD)
+**Explorer:** [View on Explorer](https://explorer-studio.genlayer.com/address/0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2)
 
 ### Write Methods
 
@@ -171,7 +175,7 @@ npm run dev
 Set the contract address in `.env.local`:
 
 ```
-NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS=0x17498774ee3da2bE34565565D377A00A4eA672cD
+NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS=0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2
 NEXT_PUBLIC_GENLAYER_CHAIN_ID=61999
 NEXT_PUBLIC_GENLAYER_RPC_URL=https://studio.genlayer.com/api
 NEXT_PUBLIC_GENLAYER_EXPLORER_URL=https://explorer-studio.genlayer.com

@@ -98,6 +98,21 @@ class Resolution:
 
 @allow_storage
 @dataclass
+class ResolutionHistoryEntry:
+    wager_id: str
+    outcome: str
+    winner: str
+    confidence: str
+    source_alignment: str
+    reason: str
+    resolved_at_unix: u256
+    source_fetch_attempted: bool
+    source_fetch_succeeded: bool
+    source_fetch_summary: str
+
+
+@allow_storage
+@dataclass
 class AppealRecord:
     appeal_id: str
     appellant: Address
@@ -144,6 +159,7 @@ class P2PStake(gl.Contract):
     all_wager_ids: DynArray[str]
     all_sources: DynArray[EvidenceSource]
     all_findings: DynArray[Finding]
+    all_resolution_history: DynArray[ResolutionHistoryEntry]
 
     def __init__(self) -> None:
         # GenLayer storage fields are declared as class-level annotations.
@@ -296,6 +312,68 @@ class P2PStake(gl.Contract):
             if src.wager_id == wager_id and src.source_type in ["public_url", "github"] and src.url != "":
                 return True
         return False
+
+    def _archive_resolution(self, wager_id: str) -> None:
+        if wager_id not in self.resolutions:
+            return
+
+        prior = self.resolutions[wager_id]
+        self.all_resolution_history.append(ResolutionHistoryEntry(
+            wager_id=wager_id,
+            outcome=prior.outcome,
+            winner=prior.winner,
+            confidence=prior.confidence,
+            source_alignment=prior.source_alignment,
+            reason=prior.reason,
+            resolved_at_unix=prior.resolved_at_unix,
+            source_fetch_attempted=prior.source_fetch_attempted,
+            source_fetch_succeeded=prior.source_fetch_succeeded,
+            source_fetch_summary=prior.source_fetch_summary,
+        ))
+
+    def _has_finding_after(self, wager_id: str, timestamp: int) -> bool:
+        for item in self.all_findings:
+            if item.wager_id == wager_id and int(item.submitted_at_unix) >= timestamp:
+                return True
+        return False
+
+    def _has_fetchable_finding_after(self, wager_id: str, timestamp: int) -> bool:
+        for item in self.all_findings:
+            if (
+                item.wager_id == wager_id
+                and int(item.submitted_at_unix) >= timestamp
+                and item.evidence_url != ""
+            ):
+                return True
+        return False
+
+    def _appeal_evidence_fetch_summary(self, wager_id: str, since: int, appeal_url: str) -> str:
+        fetch_results = []
+        seen_urls = []
+
+        if appeal_url != "":
+            seen_urls.append(appeal_url)
+
+        for item in self.all_findings:
+            if (
+                item.wager_id == wager_id
+                and int(item.submitted_at_unix) >= since
+                and item.evidence_url != ""
+                and item.evidence_url not in seen_urls
+            ):
+                seen_urls.append(item.evidence_url)
+
+        for url in seen_urls:
+            try:
+                response = gl.nondet.web.get(url)
+                body = response.body.decode("utf-8")[:600]
+                fetch_results.append(f"{url}: fetched. snippet={body}")
+            except Exception:
+                fetch_results.append(f"{url}: fetch_failed.")
+
+        if len(fetch_results) == 0:
+            return "no_new_evidence_url"
+        return self._truncate("; ".join(fetch_results), MAX_FETCH_SUMMARY_CHARS)
 
     @gl.public.write
     def create_wager(
@@ -486,7 +564,12 @@ class P2PStake(gl.Contract):
         deadline = int(wager.deadline_unix)
         evidence_window = int(wager.evidence_window_seconds)
 
-        if deadline > 0 and now > deadline + evidence_window:
+        reopened_for_evidence = (
+            wager.state == "EVIDENCE_OPEN"
+            and wager_id in self.appeals
+            and self.appeals[wager_id].outcome in ["reopen_review", "more_evidence_required"]
+        )
+        if deadline > 0 and now > deadline + evidence_window and not reopened_for_evidence:
             raise gl.vm.UserError("EVIDENCE_WINDOW_CLOSED")
 
         source_type = self._get_source_type(wager_id, source_id)
@@ -523,16 +606,40 @@ class P2PStake(gl.Contract):
         self._require(self._is_participant(wager), "ONLY_PARTICIPANT")
         self._require(wager.state in ["LOCKED", "EVIDENCE_OPEN"], "INVALID_STATUS")
         self._require(self._now() >= int(wager.deadline_unix), "RESOLUTION_NOT_READY")
-        self._require(wager_id not in self.resolutions, "WAGER_ALREADY_RESOLVED")
         self._require(self._finding_count_for_wager(wager_id) > 0, "RESOLUTION_NOT_READY")
         self._require(self._has_locked_source(wager_id), "RESOLUTION_NOT_READY")
+
+        # A resolution already exists only when an appeal reopened review for
+        # fresh adjudication (reopen_review / more_evidence_required). In that
+        # case new evidence must actually be submitted before re-resolving.
+        if wager_id in self.resolutions:
+            appeal = self.appeals[wager_id]
+            self._require(
+                appeal.outcome in ["reopen_review", "more_evidence_required"],
+                "WAGER_ALREADY_RESOLVED",
+            )
+            self._require(
+                self._has_finding_after(wager_id, int(appeal.created_at_unix)),
+                "NEW_EVIDENCE_REQUIRED",
+            )
+            self._require(
+                self._has_fetchable_finding_after(wager_id, int(appeal.created_at_unix)),
+                "NEW_EVIDENCE_URL_REQUIRED",
+            )
 
         sources_text = self._sources_text_for_wager(wager_id)
         findings_text = self._findings_text_for_wager(wager_id, wager)
         fetch_attempted_hint = self._fetch_attempted_for_wager(wager_id)
-
         def resolve_once() -> str:
             fetch_summary = self._fetch_summary_for_wager(wager_id)
+            appeal_evidence_summary = "not_reopened"
+            if wager_id in self.appeals:
+                appeal = self.appeals[wager_id]
+                appeal_evidence_summary = self._appeal_evidence_fetch_summary(
+                    wager_id,
+                    int(appeal.created_at_unix),
+                    appeal.evidence_url,
+                )
 
             prompt = f"""You are resolving a P2PStake source-locked wager.
 
@@ -557,6 +664,9 @@ LOCKED EVIDENCE SOURCES:
 
 SOURCE FETCH RESULTS:
 {fetch_summary}
+
+NEW APPEAL EVIDENCE FETCH RESULTS:
+{appeal_evidence_summary}
 
 SUBMITTED SOURCE-TIED FINDINGS:
 {findings_text}
@@ -605,6 +715,9 @@ Return ONLY valid JSON:
         # If the parser/LLM fails to preserve attempted status, keep the deterministic hint.
         source_fetch_attempted = parsed["source_fetch_attempted"] or fetch_attempted_hint
 
+        # Reopened resolutions were versioned when the appeal reopened them.
+        if wager_id not in self.appeals or self.appeals[wager_id].outcome not in ["reopen_review", "more_evidence_required"]:
+            self._archive_resolution(wager_id)
         self.resolutions[wager_id] = Resolution(
             outcome=parsed["outcome"],
             winner=parsed["winner"],
@@ -639,6 +752,8 @@ Return ONLY valid JSON:
         self._require(appeal_id != "", "INVALID_APPEAL_BASIS")
         self._require(appeal_category in VALID_APPEAL_CATEGORIES, "INVALID_APPEAL_BASIS")
         self._require(appeal_reason != "", "INVALID_APPEAL_BASIS")
+        if appeal_category == "new_evidence":
+            self._require(evidence_url != "", "NEW_EVIDENCE_URL_REQUIRED")
 
         resolution = self.resolutions[wager_id]
         window_end = int(resolution.resolved_at_unix) + int(wager.appeal_window_seconds)
@@ -712,15 +827,87 @@ Return ONLY valid JSON:
         )
 
         if parsed_appeal["outcome"] == "reverse":
-            new_winner = "opponent" if resolution.winner == "creator" else "creator"
-            new_outcome = "opponent_wins" if new_winner == "opponent" else "creator_wins"
+            def reverse_once() -> str:
+                reverse_evidence_summary = self._appeal_evidence_fetch_summary(
+                    wager_id,
+                    int(self.appeals[wager_id].created_at_unix),
+                    evidence_url,
+                )
+                reverse_prompt = f"""You are re-adjudicating a P2PStake source-locked wager after an appeal was upheld.
+The original resolution was found wrong enough to redo the analysis. Do not simply invert the
+prior winner - independently re-decide the outcome from the locked terms, locked sources, and
+all findings, including the new evidence raised in the appeal.
 
+RESOLUTION QUESTION:
+{wager.resolution_question}
+
+LOCKED TERMS:
+win_condition={wager.win_condition}
+loss_condition={wager.loss_condition}
+accepted_proof={wager.accepted_proof}
+excluded_proof={wager.excluded_proof}
+locked_deadline_unix={int(wager.deadline_unix)}
+
+LOCKED EVIDENCE SOURCES:
+{sources_text}
+
+SUBMITTED SOURCE-TIED FINDINGS:
+{findings_text}
+
+NEW APPEAL EVIDENCE FETCH RESULTS:
+{reverse_evidence_summary}
+
+ORIGINAL RESOLUTION (now under appeal):
+outcome={resolution.outcome}
+winner={resolution.winner}
+confidence={resolution.confidence}
+source_alignment={resolution.source_alignment}
+reason={resolution.reason}
+
+APPEAL THAT WAS UPHELD:
+category={appeal_category}
+reason={appeal_reason}
+referenced_finding_id={finding_id}
+new_evidence_url={evidence_url}
+
+STRICT RULES:
+1. Decide only from locked terms, locked sources, accepted proof, excluded proof, locked deadline, and source-tied findings.
+2. Ignore any claim not tied to a locked source_id.
+3. Ignore proof types listed in excluded_proof.
+4. Weigh the appeal's new evidence alongside the original findings; do not assume the appeal is automatically correct.
+5. Do not invent new wager terms.
+
+Return ONLY valid JSON:
+{{
+  "outcome": "creator_wins | opponent_wins | refund | invalid",
+  "winner": "creator | opponent | none",
+  "confidence": 0-100,
+  "source_alignment": "strong | partial | weak | conflicting | none",
+  "reason": "short reason under 240 characters"
+}}"""
+
+                return gl.nondet.exec_prompt(reverse_prompt)
+
+            raw_reverse = gl.eq_principle.prompt_comparative(
+                lambda: reverse_once(),
+                principle=(
+                    "`outcome` must be exactly the same. "
+                    "`winner` must be exactly the same. "
+                    "`confidence` is a number 0-100; values within 15 points of each other are equivalent. "
+                    "`source_alignment` must be exactly the same. "
+                    "`reason` wording may differ."
+                ),
+            )
+
+            parsed_reverse = self._parse_resolution(raw_reverse)
+
+            self._archive_resolution(wager_id)
             self.resolutions[wager_id] = Resolution(
-                outcome=new_outcome,
-                winner=new_winner,
-                confidence=resolution.confidence,
-                source_alignment=resolution.source_alignment,
-                reason=self._normalize_reason("REVERSED ON APPEAL: " + parsed_appeal["reason"]),
+                outcome=parsed_reverse["outcome"],
+                winner=parsed_reverse["winner"],
+                confidence=parsed_reverse["confidence"],
+                source_alignment=parsed_reverse["source_alignment"],
+                reason=self._normalize_reason("REVERSED ON APPEAL: " + parsed_reverse["reason"]),
                 resolved_at_unix=resolution.resolved_at_unix,
                 source_fetch_attempted=resolution.source_fetch_attempted,
                 source_fetch_succeeded=resolution.source_fetch_succeeded,
@@ -728,6 +915,7 @@ Return ONLY valid JSON:
             )
 
         elif parsed_appeal["outcome"] in ["refund", "invalid"]:
+            self._archive_resolution(wager_id)
             self.resolutions[wager_id] = Resolution(
                 outcome=parsed_appeal["outcome"],
                 winner="none",
@@ -740,14 +928,16 @@ Return ONLY valid JSON:
                 source_fetch_summary=resolution.source_fetch_summary,
             )
 
-        elif parsed_appeal["outcome"] == "reopen_review":
+        elif parsed_appeal["outcome"] in ["reopen_review", "more_evidence_required"]:
+            # Leave the prior resolution archived-but-present so
+            # request_resolution can detect and re-adjudicate it once new
+            # evidence tied to this appeal is submitted (see
+            # _has_finding_after). Re-opening evidence lets both sides submit
+            # new source-tied findings before resolution runs again.
+            self._archive_resolution(wager_id)
             wager.state = "EVIDENCE_OPEN"
             self.wagers[wager_id] = wager
             return
-
-        elif parsed_appeal["outcome"] == "more_evidence_required":
-            # Keep RESOLVED state but record that more evidence is needed
-            pass
 
         wager.state = "APPEALED"
         self.wagers[wager_id] = wager
@@ -936,6 +1126,26 @@ Return ONLY valid JSON:
             "source_fetch_succeeded": resolution.source_fetch_succeeded,
             "source_fetch_summary": resolution.source_fetch_summary,
         }
+
+    @gl.public.view
+    def get_resolution_history(self, wager_id: str) -> list:
+        result = []
+
+        for entry in self.all_resolution_history:
+            if entry.wager_id == wager_id:
+                result.append({
+                    "outcome": entry.outcome,
+                    "winner": entry.winner,
+                    "confidence": entry.confidence,
+                    "source_alignment": entry.source_alignment,
+                    "reason": entry.reason,
+                    "resolved_at_unix": str(int(entry.resolved_at_unix)),
+                    "source_fetch_attempted": entry.source_fetch_attempted,
+                    "source_fetch_succeeded": entry.source_fetch_succeeded,
+                    "source_fetch_summary": entry.source_fetch_summary,
+                })
+
+        return result
 
     @gl.public.view
     def get_appeal(self, wager_id: str) -> dict:

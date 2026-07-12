@@ -6,7 +6,7 @@ P2PStake contract on GenLayer StudioNet. They can be run with the
 genlayer-test framework (pytest + genlayer-py) in integration mode,
 or verified manually via the GenLayer CLI.
 
-Contract: 0x17498774ee3da2bE34565565D377A00A4eA672cD
+Contract: 0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2
 Network: StudioNet (chain 61999)
 
 Manual CLI verification commands are provided as comments.
@@ -58,8 +58,14 @@ Manual CLI verification commands are provided as comments.
 #    - valid category required (5 categories)
 #    - non-empty reason required
 #    - only one appeal per wager
-#    - state becomes APPEALED
-#    - reverse flips winner, refund/invalid sets winner to none
+#    - state becomes APPEALED (except reopen_review/more_evidence_required)
+#    - reverse re-adjudicates via a second nondet resolution pass (not a mechanical winner flip)
+#    - refund/invalid sets winner to none
+#    - reopen_review/more_evidence_required archive the prior resolution to
+#      resolution history and reopen state to EVIDENCE_OPEN so new source-tied
+#      findings can be submitted
+#    - request_resolution can re-run after reopen only once a new finding is
+#      submitted after the appeal (NEW_EVIDENCE_REQUIRED otherwise)
 #
 # 7. FINALIZE
 #    - state must be RESOLVED or APPEALED
@@ -92,7 +98,7 @@ Manual CLI verification commands are provided as comments.
 
 # ─── CLI Smoke Test Commands ───
 #
-# Replace <ADDR> with: 0x17498774ee3da2bE34565565D377A00A4eA672cD
+# Replace <ADDR> with: 0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2
 #
 # A. genlayer call --contract <ADDR> --method get_all_wager_ids
 #    Expected: [] (empty list on fresh contract)

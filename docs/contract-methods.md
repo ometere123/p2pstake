@@ -1,6 +1,6 @@
 # P2PStake Contract Method Reference
 
-Contract: `0x17498774ee3da2bE34565565D377A00A4eA672cD`
+Contract: `0xD68fA99e5746904aF2919eE69E0ddC36408bf4d2`
 Network: GenLayer StudioNet (chain 61999)
 
 ## create_wager
@@ -49,6 +49,11 @@ Ask GenLayer to settle. Uses nondeterministic consensus.
 
 **Inputs:** wager_id
 **Rules:** Deadline passed, ≥1 finding, ≥1 locked source. State → RESOLVED.
+If a prior resolution exists (wager was reopened by an appeal), a new finding
+submitted after the appeal must exist first (NEW_EVIDENCE_REQUIRED), and the
+prior resolution is already archived in resolution history before being replaced.
+New appeal evidence URLs are fetched nondeterministically and supplied to the
+fresh adjudication.
 
 ## appeal_resolution
 
@@ -57,6 +62,12 @@ Challenge with evidence. One appeal per wager.
 **Inputs:** wager_id, appeal_id, appeal_category, appeal_reason, finding_id, evidence_url
 
 **Categories:** new_evidence, wrong_source_read, deadline_misread, fraudulent_evidence, condition_misinterpreted
+
+**Appeal outcomes:**
+- `reverse` — re-adjudicated via a second nondeterministic resolution pass (weighs the appeal's new evidence, not a mechanical winner flip). State → APPEALED.
+- `refund` / `invalid` — winner cleared to none. State → APPEALED.
+- `uphold` — original resolution stands. State → APPEALED.
+- `reopen_review` / `more_evidence_required` — prior resolution archived to resolution history; state → EVIDENCE_OPEN so both sides can submit new source-tied findings before `request_resolution` is called again.
 
 ## finalize_wager
 

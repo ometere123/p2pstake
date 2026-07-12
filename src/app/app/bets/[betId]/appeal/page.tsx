@@ -212,12 +212,19 @@ export default function AppealPage() {
 
           {/* New evidence URL */}
           <div>
-            <Label className="text-p2p-text-secondary">New Evidence URL (optional)</Label>
+            <Label className="text-p2p-text-secondary">
+              New Evidence URL {selectedAppealCategory === "new_evidence" ? "(required)" : "(optional)"}
+            </Label>
             <Input
               {...form.register("evidence_url")}
               placeholder="https://..."
               className="mt-1 border-p2p-border bg-p2p-surface text-sm"
             />
+            {form.formState.errors.evidence_url && (
+              <p className="mt-1 text-xs text-p2p-red">
+                {form.formState.errors.evidence_url.message}
+              </p>
+            )}
           </div>
 
           {/* Results */}

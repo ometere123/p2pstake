@@ -36,6 +36,7 @@ Flat storage pattern (GenLayer does not support nested generic collections):
 - `all_wager_ids: DynArray[str]`
 - `all_sources: DynArray[EvidenceSource]` (filtered by wager_id)
 - `all_findings: DynArray[Finding]` (filtered by wager_id)
+- `all_resolution_history: DynArray[ResolutionHistoryEntry]` (filtered by wager_id; archived prior resolutions from re-adjudication/reopen)
 
 ## Resolution
 
