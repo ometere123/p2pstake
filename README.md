@@ -104,6 +104,7 @@ GenLayer consensus reviews the locked terms, proof rules, and source-tied eviden
 | `get_sources` | Locked evidence sources for a wager |
 | `get_findings` | Submitted source-tied findings |
 | `get_resolution` | GenLayer verdict with structured reasoning |
+| `get_resolution_history` | Archived prior verdicts after reopen or appeal re-adjudication |
 | `get_appeal` | Appeal record |
 | `get_position` | Caller's role, funded status, claim status |
 | `get_wager_ids_for_address` | Wager IDs for an address |
@@ -146,6 +147,8 @@ GenLayer returns a structured verdict with numeric confidence:
 **Equivalence principle** compares: outcome + winner + confidence (±15 tolerance) + source_alignment.
 
 **Appeal outcomes:** uphold, reverse, refund, invalid, reopen_review, more_evidence_required.
+
+When an appeal reopens review or causes re-adjudication, prior verdicts are archived on-chain and displayed in the wager activity timeline.
 
 ---
 
