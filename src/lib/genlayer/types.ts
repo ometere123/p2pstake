@@ -109,6 +109,8 @@ export interface Resolution {
   source_fetch_summary: string; // structured: EVIDENCE: ... | RULES: ... | AMBIGUITY: ... | WARNINGS: ...
 }
 
+export type ResolutionHistoryEntry = Resolution;
+
 export interface AppealRecord {
   appeal_id: string;
   appellant: string;
@@ -135,6 +137,7 @@ export interface WagerDetail {
   sources: EvidenceSource[];
   findings: Finding[];
   resolution: Resolution | null;
+  resolutionHistory: ResolutionHistoryEntry[];
   appeal: AppealRecord | null;
   position: Position | null;
 }

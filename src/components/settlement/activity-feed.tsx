@@ -14,7 +14,7 @@ interface Activity {
 }
 
 export function ActivityFeed({ data }: { data: WagerDetail }) {
-  const { wager, findings, resolution, appeal } = data;
+  const { wager, findings, resolution, resolutionHistory, appeal } = data;
   const activities: Activity[] = [];
 
   activities.push({
@@ -74,6 +74,16 @@ export function ActivityFeed({ data }: { data: WagerDetail }) {
       detail: `Source: ${f.source_id} · Supports: ${f.supports_side}`,
     });
   }
+
+  resolutionHistory.forEach((entry, index) => {
+    activities.push({
+      icon: Scale,
+      label: `Archived verdict v${index + 1}: ${entry.outcome}`,
+      time: unixToLocal(entry.resolved_at_unix),
+      color: "text-p2p-grey",
+      detail: `Winner: ${entry.winner} · Confidence: ${entry.confidence}`,
+    });
+  });
 
   if (resolution) {
     activities.push({

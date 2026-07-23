@@ -6,6 +6,7 @@ import {
   getSources,
   getFindings,
   getResolution,
+  getResolutionHistory,
   getAppeal,
   getPosition,
 } from "@/lib/genlayer/contract";
@@ -23,12 +24,13 @@ export function useWager(wagerId: string | null) {
   const fetchData = useCallback(async () => {
     if (!wagerId) return;
     try {
-      const [wager, sources, findings, resolution, appeal] =
+      const [wager, sources, findings, resolution, resolutionHistory, appeal] =
         await Promise.all([
           getWager(wagerId),
           getSources(wagerId),
           getFindings(wagerId),
           getResolution(wagerId),
+          getResolutionHistory(wagerId),
           getAppeal(wagerId),
         ]);
 
@@ -43,7 +45,7 @@ export function useWager(wagerId: string | null) {
         position = await getPosition(wagerId, address);
       }
 
-      setData({ wager, sources, findings, resolution, appeal, position });
+      setData({ wager, sources, findings, resolution, resolutionHistory, appeal, position });
       setError(null);
     } catch {
       setError("Failed to load wager data.");

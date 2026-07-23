@@ -5,6 +5,7 @@ import type {
   EvidenceSource,
   Finding,
   Resolution,
+  ResolutionHistoryEntry,
   AppealRecord,
   Position,
   CreateWagerInput,
@@ -73,6 +74,22 @@ export async function getResolution(
     return res;
   } catch {
     return null;
+  }
+}
+
+export async function getResolutionHistory(
+  wagerId: string
+): Promise<ResolutionHistoryEntry[]> {
+  try {
+    const client = getClient();
+    const result = await client.readContract({
+      address: CONTRACT(),
+      functionName: "get_resolution_history",
+      args: [wagerId],
+    });
+    return (result as unknown as ResolutionHistoryEntry[]) || [];
+  } catch {
+    return [];
   }
 }
 

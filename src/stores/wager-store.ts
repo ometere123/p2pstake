@@ -5,6 +5,7 @@ import {
   getSources,
   getFindings,
   getResolution,
+  getResolutionHistory,
   getAppeal,
   getPosition,
 } from "@/lib/genlayer/contract";
@@ -32,11 +33,12 @@ export const useWagerStore = create<WagerStoreState>((set, get) => ({
       return cached.data;
     }
 
-    const [wager, sources, findings, resolution, appeal] = await Promise.all([
+    const [wager, sources, findings, resolution, resolutionHistory, appeal] = await Promise.all([
       getWager(wagerId),
       getSources(wagerId),
       getFindings(wagerId),
       getResolution(wagerId),
+      getResolutionHistory(wagerId),
       getAppeal(wagerId),
     ]);
 
@@ -52,6 +54,7 @@ export const useWagerStore = create<WagerStoreState>((set, get) => ({
       sources,
       findings,
       resolution,
+      resolutionHistory,
       appeal,
       position,
     };

@@ -31,3 +31,20 @@ test("create flow prevents blocked and incomplete source-locked wagers in the UI
   assert.match(proofSourcesStep, /disabled=\{!hasPrimary \|\| fields\.length === 0\}/);
   assert.match(proofRulesStep, /trigger\(\["accepted_proof", "excluded_proof"\]\)/);
 });
+
+test("frontend reads and displays versioned resolution history", () => {
+  const types = readFileSync("src/lib/genlayer/types.ts", "utf8");
+  const contractClient = readFileSync("src/lib/genlayer/contract.ts", "utf8");
+  const useWager = readFileSync("src/hooks/use-wager.ts", "utf8");
+  const wagerStore = readFileSync("src/stores/wager-store.ts", "utf8");
+  const activityFeed = readFileSync("src/components/settlement/activity-feed.tsx", "utf8");
+  const copy = readFileSync("src/lib/wager/copy.ts", "utf8");
+
+  assert.match(types, /export type ResolutionHistoryEntry = Resolution/);
+  assert.match(types, /resolutionHistory: ResolutionHistoryEntry\[\]/);
+  assert.match(contractClient, /functionName: "get_resolution_history"/);
+  assert.match(useWager, /getResolutionHistory\(wagerId\)/);
+  assert.match(wagerStore, /getResolutionHistory\(wagerId\)/);
+  assert.match(activityFeed, /Archived verdict v\$\{index \+ 1\}/);
+  assert.match(copy, /Resolution reversed after fresh adjudication/);
+});
